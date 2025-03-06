@@ -7,6 +7,7 @@ This directory contains example files demonstrating the usage of the CleanGo lib
 - `sample_data.csv`: Example data in CSV format
 - `sample_data.json`: Example data in JSON format
 - `sample_data.xml`: Example data in XML format
+- `sample_data.yaml`: Example data in YAML format
 - `sample_data.xlsx`: Example data in Excel format
 - `sample_data.parquet`: Example data in Parquet format
 - `api_request.json`: Example JSON request for API
@@ -38,6 +39,12 @@ XML file cleaning:
 cleango clean examples/sample_data.xml --trim --date-format="created_at:2006-01-02" --root-element="root" --item-element="item" --output=cleaned.xml
 ```
 
+YAML file cleaning:
+
+```bash
+cleango clean examples/sample_data.yaml --trim --date-format="created_at:2006-01-02" --output=cleaned.yaml
+```
+
 Excel file cleaning:
 
 ```bash
@@ -55,6 +62,7 @@ Reading CSV file and saving in different formats:
 ```bash
 cleango clean examples/sample_data.csv --trim --format=json --output=cleaned.json
 cleango clean examples/sample_data.csv --trim --format=xml --output=cleaned.xml
+cleango clean examples/sample_data.csv --trim --format=yaml --output=cleaned.yaml
 cleango clean examples/sample_data.csv --trim --format=excel --output=cleaned.xlsx
 cleango clean examples/sample_data.csv --trim --format=parquet --output=cleaned.parquet
 ```
@@ -166,6 +174,12 @@ func main() {
 		log.Fatalf("Error: %v", err)
 	}
 
+	// Read YAML file
+	yamlDf, err := cleaner.ReadYAML("examples/sample_data.yaml")
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+
 	// Basic cleaning operations
 	df.TrimColumns()
 	df.CleanDates("created_at", "2006-01-02")
@@ -181,6 +195,7 @@ func main() {
 	df.WriteCSV("cleaned.csv")
 	df.WriteJSON("cleaned.json")
 	df.WriteXML("cleaned.xml", formats.WithXMLPretty(true), formats.WithXMLRootElement("users"), formats.WithXMLItemElement("user"))
+	df.WriteYAML("cleaned.yaml", formats.WithYAMLPretty(true))
 	df.WriteExcel("cleaned.xlsx", formats.WithSheetName("Temizlenmiş Veri"))
 	df.WriteParquet("cleaned.parquet", cleaner.WithParquetCompression(parquet.CompressionCodec_SNAPPY))
 

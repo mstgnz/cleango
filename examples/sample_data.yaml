@@ -1,0 +1,79 @@
+- id: 1
+  name: John Doe
+  email: john@example.com
+  age: 30
+  created_at: 2023-01-15
+  active: true
+  score: 85.5
+
+- id: 2
+  name: Jane Smith
+  email: jane@example.com
+  age: 25
+  created_at: 2023-02-20
+  active: true
+  score: 92.0
+
+- id: 3
+  name: Bob Johnson
+  email: bob@example.com
+  age: 40
+  created_at: 2023-03-10
+  active: false
+  score: 78.3
+
+- id: 4
+  name: Alice Brown
+  email: alice@example.com
+  age: 35
+  created_at: 2023-04-05
+  active: true
+  score: 88.7
+
+- id: 5
+  name: Charlie Wilson
+  email: charlie@example.com
+  age: 28
+  created_at: 2023-05-12
+  active: false
+  score: 76.2
+
+- id: 6
+  name: Eva Davis
+  email: eva@example.com
+  age: 32
+  created_at: 2023-06-18
+  active: true
+  score: 90.1
+
+- id: 7
+  name: Frank Miller
+  email: frank@example.com
+  age: 45
+  created_at: 2023-07-22
+  active: true
+  score: 82.9
+
+- id: 8
+  name: Grace Taylor
+  email: grace@example.com
+  age: 27
+  created_at: 2023-08-30
+  active: false
+  score: 79.5
+
+- id: 9
+  name: Henry Clark
+  email: henry@example.com
+  age: 38
+  created_at: 2023-09-14
+  active: true
+  score: 87.3
+
+- id: 10
+  name: Ivy Robinson
+  email: ivy@example.com
+  age: 29
+  created_at: 2023-10-25
+  active: true
+  score: 91.8 
