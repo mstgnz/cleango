@@ -2,29 +2,29 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Bağımlılıkları kopyala ve indir
+# Copy and download dependencies
 COPY go.mod go.sum* ./
 RUN go mod download
 
-# Kaynak kodları kopyala
+# Copy source code
 COPY . .
 
-# API uygulamasını derle
+# Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/api ./cmd/api
 
-# Çalışma zamanı imajı
+# Runtime image
 FROM alpine:latest
 
 WORKDIR /app
 
-# Sertifikaları kopyala
+# Copy certificates
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-# Derlenmiş uygulamayı kopyala
+# Copy compiled application
 COPY --from=builder /app/api /app/api
 
-# Uygulama portunu aç
+# Open application port
 EXPOSE 8080
 
-# Uygulamayı çalıştır
+# Run application
 CMD ["/app/api"] 
