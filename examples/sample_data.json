@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "created_at": "2023-01-15T14:30:45Z",
+    "age": 35,
+    "is_active": true
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "email": "jane.smith@example.com",
+    "created_at": "2023-02-20T09:15:30Z",
+    "age": 28,
+    "is_active": true
+  },
+  {
+    "id": 3,
+    "name": "Bob Johnson",
+    "email": "bob.johnson@example.com",
+    "created_at": "2023-03-10T16:45:22Z",
+    "age": 42,
+    "is_active": false
+  },
+  {
+    "id": 4,
+    "name": "Alice Brown",
+    "email": "alice.brown@example.com",
+    "created_at": "2023-04-05T11:20:18Z",
+    "age": 31,
+    "is_active": true
+  },
+  {
+    "id": 5,
+    "name": "Charlie Wilson",
+    "email": "charlie.wilson@example.com",
+    "created_at": "2023-05-12T08:05:55Z",
+    "age": 39,
+    "is_active": false
+  },
+  {
+    "id": 6,
+    "name": "Diana Miller",
+    "email": "diana.miller@example.com",
+    "created_at": "2023-06-18T13:40:10Z",
+    "age": null,
+    "is_active": true
+  },
+  {
+    "id": 7,
+    "name": "Edward Davis",
+    "email": "edward.davis@example.com",
+    "created_at": "2023-07-22T17:25:33Z",
+    "age": 45,
+    "is_active": true
+  },
+  {
+    "id": 8,
+    "name": "Fiona Garcia",
+    "email": "fiona.garcia@example.com",
+    "created_at": "2023-08-30T10:10:42Z",
+    "age": 29,
+    "is_active": false
+  },
+  {
+    "id": 9,
+    "name": "George Martinez",
+    "email": "george.martinez@example.com",
+    "created_at": "2023-09-14T15:55:27Z",
+    "age": 37,
+    "is_active": true
+  },
+  {
+    "id": 10,
+    "name": "Hannah Anderson",
+    "email": "hannah.anderson@example.com",
+    "created_at": "2023-10-25T12:35:08Z",
+    "age": 33,
+    "is_active": true
+  }
+] 

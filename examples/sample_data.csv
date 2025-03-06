@@ -1,0 +1,11 @@
+id,name,email,created_at,age,is_active
+1,John Doe,john.doe@example.com,2023-01-15T14:30:45Z,35,true
+2,Jane Smith,jane.smith@example.com,2023-02-20T09:15:30Z,28,true
+3,Bob Johnson,bob.johnson@example.com,2023-03-10T16:45:22Z,42,false
+4,Alice Brown,alice.brown@example.com,2023-04-05T11:20:18Z,31,true
+5,Charlie Wilson,charlie.wilson@example.com,2023-05-12T08:05:55Z,39,false
+6,Diana Miller,diana.miller@example.com,2023-06-18T13:40:10Z,,true
+7,Edward Davis,edward.davis@example.com,2023-07-22T17:25:33Z,45,true
+8,Fiona Garcia,fiona.garcia@example.com,2023-08-30T10:10:42Z,29,false
+9,George Martinez,george.martinez@example.com,2023-09-14T15:55:27Z,37,true
+10,Hannah Anderson,hannah.anderson@example.com,2023-10-25T12:35:08Z,33,true 
