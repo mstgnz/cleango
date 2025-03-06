@@ -4,7 +4,7 @@ CleanGo is a library that performs data cleaning and transformation operations w
 
 ## Features
 
-- ✅ Reading and writing data in CSV, JSON, Excel, and Parquet formats
+- ✅ Reading and writing data in CSV, JSON, XML, Excel, and Parquet formats
 - ✅ Powerful data cleaning functions
 - ✅ High performance with parallel processing support
 - ✅ Both library usage and CLI support
@@ -64,6 +64,7 @@ POST /clean
 
 - CSV
 - JSON
+- XML
 - Excel (xlsx, xls)
 - Parquet
 

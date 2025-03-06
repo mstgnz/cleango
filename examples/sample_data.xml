@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <item>
+        <id>1</id>
+        <name>John Doe</name>
+        <email>john@example.com</email>
+        <age>30</age>
+        <created_at>2023-01-15</created_at>
+        <active>true</active>
+        <score>85.5</score>
+    </item>
+    <item>
+        <id>2</id>
+        <name>Jane Smith</name>
+        <email>jane@example.com</email>
+        <age>25</age>
+        <created_at>2023-02-20</created_at>
+        <active>true</active>
+        <score>92.0</score>
+    </item>
+    <item>
+        <id>3</id>
+        <name>Bob Johnson</name>
+        <email>bob@example.com</email>
+        <age>40</age>
+        <created_at>2023-03-10</created_at>
+        <active>false</active>
+        <score>78.3</score>
+    </item>
+    <item>
+        <id>4</id>
+        <name>Alice Brown</name>
+        <email>alice@example.com</email>
+        <age>35</age>
+        <created_at>2023-04-05</created_at>
+        <active>true</active>
+        <score>88.7</score>
+    </item>
+    <item>
+        <id>5</id>
+        <name>Charlie Wilson</name>
+        <email>charlie@example.com</email>
+        <age>28</age>
+        <created_at>2023-05-12</created_at>
+        <active>false</active>
+        <score>76.2</score>
+    </item>
+    <item>
+        <id>6</id>
+        <name>Eva Davis</name>
+        <email>eva@example.com</email>
+        <age>32</age>
+        <created_at>2023-06-18</created_at>
+        <active>true</active>
+        <score>90.1</score>
+    </item>
+    <item>
+        <id>7</id>
+        <name>Frank Miller</name>
+        <email>frank@example.com</email>
+        <age>45</age>
+        <created_at>2023-07-22</created_at>
+        <active>true</active>
+        <score>82.9</score>
+    </item>
+    <item>
+        <id>8</id>
+        <name>Grace Taylor</name>
+        <email>grace@example.com</email>
+        <age>27</age>
+        <created_at>2023-08-30</created_at>
+        <active>false</active>
+        <score>79.5</score>
+    </item>
+    <item>
+        <id>9</id>
+        <name>Henry Clark</name>
+        <email>henry@example.com</email>
+        <age>38</age>
+        <created_at>2023-09-14</created_at>
+        <active>true</active>
+        <score>87.3</score>
+    </item>
+    <item>
+        <id>10</id>
+        <name>Ivy Robinson</name>
+        <email>ivy@example.com</email>
+        <age>29</age>
+        <created_at>2023-10-25</created_at>
+        <active>true</active>
+        <score>91.8</score>
+    </item>
+</root> 

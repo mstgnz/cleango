@@ -6,6 +6,7 @@ This directory contains example files demonstrating the usage of the CleanGo lib
 
 - `sample_data.csv`: Example data in CSV format
 - `sample_data.json`: Example data in JSON format
+- `sample_data.xml`: Example data in XML format
 - `sample_data.xlsx`: Example data in Excel format
 - `sample_data.parquet`: Example data in Parquet format
 - `api_request.json`: Example JSON request for API
@@ -31,6 +32,12 @@ JSON file cleaning:
 cleango clean examples/sample_data.json --trim --date-format="created_at:2006-01-02" --output=cleaned.json
 ```
 
+XML file cleaning:
+
+```bash
+cleango clean examples/sample_data.xml --trim --date-format="created_at:2006-01-02" --root-element="root" --item-element="item" --output=cleaned.xml
+```
+
 Excel file cleaning:
 
 ```bash
@@ -47,6 +54,7 @@ Reading CSV file and saving in different formats:
 
 ```bash
 cleango clean examples/sample_data.csv --trim --format=json --output=cleaned.json
+cleango clean examples/sample_data.csv --trim --format=xml --output=cleaned.xml
 cleango clean examples/sample_data.csv --trim --format=excel --output=cleaned.xlsx
 cleango clean examples/sample_data.csv --trim --format=parquet --output=cleaned.parquet
 ```
@@ -139,12 +147,21 @@ import (
 	"log"
 
 	"github.com/mstgnz/cleango/pkg/cleaner"
+	"github.com/mstgnz/cleango/pkg/formats"
 	"github.com/xitongsys/parquet-go/parquet"
 )
 
 func main() {
 	// Read CSV file
 	df, err := cleaner.ReadCSV("examples/sample_data.csv")
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+
+	// Read XML file
+	xmlDf, err := cleaner.ReadXML("examples/sample_data.xml",
+		formats.WithXMLRootElement("root"),
+		formats.WithXMLItemElement("item"))
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
@@ -163,6 +180,7 @@ func main() {
 	// Save in different formats
 	df.WriteCSV("cleaned.csv")
 	df.WriteJSON("cleaned.json")
+	df.WriteXML("cleaned.xml", formats.WithXMLPretty(true), formats.WithXMLRootElement("users"), formats.WithXMLItemElement("user"))
 	df.WriteExcel("cleaned.xlsx", formats.WithSheetName("Temizlenmiş Veri"))
 	df.WriteParquet("cleaned.parquet", cleaner.WithParquetCompression(parquet.CompressionCodec_SNAPPY))
 
@@ -170,80 +188,4 @@ func main() {
 	rows, cols := df.Shape()
 	fmt.Printf("Row count: %d, Column count: %d\n", rows, cols)
 }
-```
-
-Usage with parallel processing:
-
-```go
-package main
-
-import (
-	"fmt"
-	"log"
-
-	"github.com/mstgnz/cleango/pkg/cleaner"
-)
-
-func main() {
-	// Read large CSV file
-	df, err := cleaner.ReadCSV("examples/big_data.csv")
-	if err != nil {
-		log.Fatalf("Error: %v", err)
-	}
-
-	// Parallel cleaning operations
-	df = df.TrimColumnsParallel()
-
-	// Use custom worker count with parallel processing
-	workers := cleaner.WithMaxWorkers(8)
-
-	_, err = df.CleanDatesParallel("created_at", "2006-01-02", workers)
-	if err != nil {
-		log.Fatalf("Date cleaning error: %v", err)
-	}
-
-	_, err = df.ReplaceNullsParallel("age", "0", workers)
-	if err != nil {
-		log.Fatalf("Null replacement error: %v", err)
-	}
-
-	_, err = df.NormalizeCaseParallel("name", false, workers) // lowercase
-	if err != nil {
-		log.Fatalf("Letter conversion error: %v", err)
-	}
-
-	// Batch processing
-	processors := []func(*cleaner.DataFrame) (*cleaner.DataFrame, error){
-		func(df *cleaner.DataFrame) (*cleaner.DataFrame, error) {
-			return df.CleanWithRegexParallel("email", "@example\\.com", "@cleango.org", workers)
-		},
-		func(df *cleaner.DataFrame) (*cleaner.DataFrame, error) {
-			return df.FilterOutliersParallel("age", 18, 65, workers)
-		},
-	}
-
-	df, err = df.BatchProcessParallel(processors, workers)
-	if err != nil {
-		log.Fatalf("Batch processing error: %v", err)
-	}
-
-	// Sonucu kaydet
-	err = df.WriteCSV("cleaned_big_data.csv")
-	if err != nil {
-		log.Fatalf("File writing error: %v", err)
-	}
-
-	// Show statistics
-	rows, cols := df.Shape()
-	fmt.Printf("Row count: %d, Column count: %d\n", rows, cols)
-}
-```
-
-## Running with Docker
-
-Running API with Docker:
-
-```bash
-docker build -t cleango:latest .
-docker run -p 8080:8080 cleango:latest
 ```
