@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Verify dependencies
+        run: go mod verify
+
+      - name: Run vet
+        run: go vet ./...
+
+      - name: Run tests with race detector
+        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Report coverage
+        run: |
+          go tool cover -func=coverage.out | grep total
+          echo "Coverage report generated"
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build API
+        run: CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /tmp/api ./cmd/api
+
+      - name: Build CLI
+        run: CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /tmp/cleango ./cmd/cleango
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t cleango:ci .

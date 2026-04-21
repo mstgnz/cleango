@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 )
 
 // JSONOptions contains JSON reading and writing options
@@ -62,11 +63,12 @@ func ReadJSONToRaw(filePath string, options ...JSONOption) ([]string, [][]string
 		}
 	}
 
-	// Convert headers map to slice
+	// Convert headers map to slice (sorted for deterministic output)
 	headerSlice := make([]string, 0, len(headers))
 	for header := range headers {
 		headerSlice = append(headerSlice, header)
 	}
+	sort.Strings(headerSlice)
 
 	// Convert data
 	rows := make([][]string, len(data))

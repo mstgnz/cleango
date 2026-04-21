@@ -18,7 +18,10 @@ func TestTrimColumnsParallel(t *testing.T) {
 	}
 
 	// Clean spaces in parallel
-	trimmedDF := df.TrimColumnsParallel()
+	trimmedDF, err := df.TrimColumnsParallel()
+	if err != nil {
+		t.Fatalf("TrimColumnsParallel error: %v", err)
+	}
 	trimmedData := trimmedDF.GetData()
 
 	expectedData := [][]string{

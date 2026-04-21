@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -133,11 +134,12 @@ func ReadXMLToRaw(filePath string, options ...XMLOption) ([]string, [][]string, 
 		}
 	}
 
-	// Convert headers map to slice
+	// Convert headers map to slice (sorted for deterministic output)
 	headerSlice := make([]string, 0, len(headers))
 	for header := range headers {
 		headerSlice = append(headerSlice, header)
 	}
+	sort.Strings(headerSlice)
 
 	// Convert data
 	rows := make([][]string, len(items))
@@ -180,7 +182,9 @@ func WriteXMLFromRaw(headers []string, data [][]string, filePath string, options
 	}
 
 	// Write XML header
-	file.WriteString(xml.Header)
+	if _, err := file.WriteString(xml.Header); err != nil {
+		return fmt.Errorf("failed to write XML header: %w", err)
+	}
 
 	// Start root element
 	if err := encoder.EncodeToken(xml.StartElement{Name: xml.Name{Local: opts.RootElement}}); err != nil {

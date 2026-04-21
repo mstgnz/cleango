@@ -1,19 +1,22 @@
 package cleaner
 
 import (
+	"context"
 	"runtime"
 	"sync"
 )
 
 // ParallelOptions contains parallel processing options
 type ParallelOptions struct {
-	MaxWorkers int // Maximum number of workers
+	MaxWorkers int
+	Context    context.Context
 }
 
 // defaultParallelOptions returns default parallel processing options
 func defaultParallelOptions() *ParallelOptions {
 	return &ParallelOptions{
-		MaxWorkers: runtime.NumCPU(), // Default to number of CPU cores
+		MaxWorkers: runtime.NumCPU(),
+		Context:    context.Background(),
 	}
 }
 
@@ -26,90 +29,96 @@ func WithMaxWorkers(maxWorkers int) func(*ParallelOptions) {
 	}
 }
 
+// WithContext sets the context for cancellation and timeout support
+func WithContext(ctx context.Context) func(*ParallelOptions) {
+	return func(o *ParallelOptions) {
+		if ctx != nil {
+			o.Context = ctx
+		}
+	}
+}
+
 // parallelizeRows performs parallel operations on rows
-func (df *DataFrame) parallelizeRows(processor func(row []string) []string, options ...func(*ParallelOptions)) *DataFrame {
-	// Set options
+func (df *DataFrame) parallelizeRows(processor func(row []string) []string, options ...func(*ParallelOptions)) (*DataFrame, error) {
 	opts := defaultParallelOptions()
 	for _, option := range options {
 		option(opts)
 	}
 
-	// Don't process if no data
+	ctx := opts.Context
+
 	if len(df.Data) == 0 {
-		return df
+		return df, nil
 	}
 
-	// Determine number of workers
 	numWorkers := opts.MaxWorkers
 	if numWorkers > len(df.Data) {
 		numWorkers = len(df.Data)
 	}
 
-	// Create job channel and result channel
 	jobs := make(chan int, len(df.Data))
 	results := make(chan struct {
 		index int
 		row   []string
 	}, len(df.Data))
 
-	// Start workers
 	var wg sync.WaitGroup
 	for w := 0; w < numWorkers; w++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for j := range jobs {
-				// Process row
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
 				row := processor(df.Data[j])
-				// Send result
 				results <- struct {
 					index int
 					row   []string
-				}{
-					index: j,
-					row:   row,
-				}
+				}{index: j, row: row}
 			}
 		}()
 	}
 
-	// Send jobs
 	for j := range df.Data {
 		jobs <- j
 	}
 	close(jobs)
 
-	// Wait for all workers to finish
 	go func() {
 		wg.Wait()
 		close(results)
 	}()
 
-	// Collect results
 	newData := make([][]string, len(df.Data))
+	copy(newData, df.Data)
 	for r := range results {
 		newData[r.index] = r.row
 	}
 
-	// Update DataFrame
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	df.Data = newData
-	return df
+	return df, nil
 }
 
 // parallelizeColumns performs parallel operations on columns
-func (df *DataFrame) parallelizeColumns(columnIndices []int, processor func(row []string, colIdx int) []string, options ...func(*ParallelOptions)) *DataFrame {
-	// Set options
+func (df *DataFrame) parallelizeColumns(columnIndices []int, processor func(row []string, colIdx int) []string, options ...func(*ParallelOptions)) (*DataFrame, error) {
 	opts := defaultParallelOptions()
 	for _, option := range options {
 		option(opts)
 	}
 
-	// Don't process if no data
+	ctx := opts.Context
+
 	if len(df.Data) == 0 {
-		return df
+		return df, nil
 	}
 
-	// Find column indices
 	indices := make([]int, 0, len(columnIndices))
 	for _, idx := range columnIndices {
 		if idx >= 0 && idx < len(df.Headers) {
@@ -117,21 +126,17 @@ func (df *DataFrame) parallelizeColumns(columnIndices []int, processor func(row 
 		}
 	}
 
-	// Don't process if no columns to process
 	if len(indices) == 0 {
-		return df
+		return df, nil
 	}
 
-	// Calculate total number of jobs (rows * columns to process)
 	totalJobs := len(df.Data) * len(indices)
 
-	// Determine number of workers
 	numWorkers := opts.MaxWorkers
 	if numWorkers > totalJobs {
 		numWorkers = totalJobs
 	}
 
-	// Create job channel and result channel
 	type job struct {
 		rowIdx  int
 		colIdx  int
@@ -143,54 +148,48 @@ func (df *DataFrame) parallelizeColumns(columnIndices []int, processor func(row 
 		row    []string
 	}, totalJobs)
 
-	// Start workers
 	var wg sync.WaitGroup
 	for w := 0; w < numWorkers; w++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for j := range jobs {
-				// Process cell
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
 				row := processor(j.rowData, j.colIdx)
-				// Send result
 				results <- struct {
 					rowIdx int
 					row    []string
-				}{
-					rowIdx: j.rowIdx,
-					row:    row,
-				}
+				}{rowIdx: j.rowIdx, row: row}
 			}
 		}()
 	}
 
-	// Send jobs
 	for i, row := range df.Data {
 		for _, colIdx := range indices {
-			jobs <- job{
-				rowIdx:  i,
-				colIdx:  colIdx,
-				rowData: row,
-			}
+			jobs <- job{rowIdx: i, colIdx: colIdx, rowData: row}
 		}
 	}
 	close(jobs)
 
-	// Wait for all workers to finish
 	go func() {
 		wg.Wait()
 		close(results)
 	}()
 
-	// Collect results
 	newData := make([][]string, len(df.Data))
 	copy(newData, df.Data)
-
 	for r := range results {
 		newData[r.rowIdx] = r.row
 	}
 
-	// Update DataFrame
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	df.Data = newData
-	return df
+	return df, nil
 }

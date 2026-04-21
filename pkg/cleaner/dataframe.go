@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // DataFrame is the basic data structure for data cleaning operations
@@ -89,7 +88,8 @@ func (df *DataFrame) ReplaceNulls(column string, defaultValue string) (*DataFram
 	return df, nil
 }
 
-// CleanDates, convert date values in the specified column to the specified format
+// CleanDates converts date values in the specified column to the specified output layout.
+// The user-provided layout is tried first as input format, then common formats are attempted.
 func (df *DataFrame) CleanDates(column string, layout string) (*DataFrame, error) {
 	colIndex := df.getColumnIndex(column)
 	if colIndex == -1 {
@@ -101,23 +101,11 @@ func (df *DataFrame) CleanDates(column string, layout string) (*DataFrame, error
 			continue
 		}
 
-		// Parse date and convert to specified format
-		t, err := time.Parse(time.RFC3339, df.Data[i][colIndex])
+		t, err := parseDate(df.Data[i][colIndex], layout)
 		if err != nil {
-			// Try different formats
-			t, err = time.Parse("2006-01-02", df.Data[i][colIndex])
-			if err != nil {
-				t, err = time.Parse("02/01/2006", df.Data[i][colIndex])
-				if err != nil {
-					t, err = time.Parse("01/02/2006", df.Data[i][colIndex])
-					if err != nil {
-						return nil, fmt.Errorf("row %d, column %s: date format not found: %s", i, column, df.Data[i][colIndex])
-					}
-				}
-			}
+			return nil, fmt.Errorf("row %d, column %s: date format not found: %s", i, column, df.Data[i][colIndex])
 		}
 
-		// Convert date to specified format
 		df.Data[i][colIndex] = t.Format(layout)
 	}
 

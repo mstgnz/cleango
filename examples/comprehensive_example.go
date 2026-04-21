@@ -326,7 +326,10 @@ func parallelProcessingExample(examplesDir string) {
 	start := time.Now()
 
 	// Parallel trim
-	df = df.TrimColumnsParallel()
+	df, err = df.TrimColumnsParallel()
+	if err != nil {
+		log.Printf("Warning: %v", err)
+	}
 	fmt.Println("Applied parallel trim to all columns")
 
 	// Parallel date cleaning

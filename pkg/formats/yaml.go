@@ -3,6 +3,7 @@ package formats
 import (
 	"fmt"
 	"os"
+	"sort"
 
 	"gopkg.in/yaml.v3"
 )
@@ -63,11 +64,12 @@ func ReadYAMLToRaw(filePath string, options ...YAMLOption) ([]string, [][]string
 		}
 	}
 
-	// Convert headers map to slice
+	// Convert headers map to slice (sorted for deterministic output)
 	headerSlice := make([]string, 0, len(headers))
 	for header := range headers {
 		headerSlice = append(headerSlice, header)
 	}
+	sort.Strings(headerSlice)
 
 	// Convert data
 	rows := make([][]string, len(data))
